@@ -43,6 +43,17 @@ bool consume(char *op) {
     return true;
 }
 
+//多分必要
+Token *consume_ident() {
+    if (token->kind != TK_IDENT) {
+        return NULL;
+    }
+    Token *tok = token;
+    token = token->next;
+    return tok;
+}
+
+
 //次のトークンが期待する記号の場合 トークンを１つ分進めて
 //それ以外だったらエラー
 void expect(char *op) {
@@ -106,9 +117,16 @@ Token *tokenize() {
             p += 2;
             continue;
         } 
-        //１つの演算子
-        if (strchr("+-*/()<>", *p)) {
+        //１つの演算子 =;追加
+        if (strchr("+-*/()<>=;", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
+            continue;
+        }
+
+        //とりあえず一文字
+        if ('a' <= *p && *p <= 'z') {
+            cur = new_token(TK_IDENT, cur, p++, 1);
+            cur->len = 1;
             continue;
         }
 

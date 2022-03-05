@@ -9,6 +9,7 @@
 //enumという列挙型がTokenKindという名前で使えるようになる
 typedef enum {
 	TK_RESERVED, //記号
+    TK_IDENT, //識別子
 	TK_NUM, //整数トークン
 	TK_EOF, //入力終了のトークン
 } TokenKind;
@@ -31,6 +32,10 @@ extern char *user_input;
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
+
+//?
+Token *consume_ident();
+
 void expect(char *op);
 int expect_number();
 bool at_eof() ;
@@ -51,10 +56,12 @@ typedef enum {
     ND_SUB, // -
     ND_MUL, // *
     ND_DIV, // /
+    ND_ASSIGN, // =
     ND_EQ,  // ==
     ND_NE,  // !=
     ND_LT,  // <
     ND_LE,  // <=
+    ND_LVAR, // ローカル変数
     ND_NUM, //整数
 } NodeKind;
 
@@ -66,13 +73,18 @@ struct Node {
     Node *lhs; //左辺 子ノード
     Node *rhs; // 右辺 子ノード
     int val; // 数字のノードのときにつかう
+    int offset; //変数のノードのときにつかう
 };
 
+extern Node *code[];
 
 Node *new_node(NodeKind kind);
 Node *new_binary(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_num(int val);
+Node *assign();
 Node *expr();
+Node *stmt();
+void program();
 Node *equality();
 Node *relational();
 Node *add();
