@@ -25,8 +25,18 @@ struct Token {
     int len; //トークンの長さ 文字列に対応するため
 };
 
+typedef struct LVar LVar;
+//変数は連結リストで表す
+struct LVar {
+  LVar *next;
+  char *name;
+  int len;
+  int offset;
+};
+
 extern Token *token;
 extern char *user_input;
+extern LVar *locals;
 
 
 void error(char *fmt, ...);
@@ -42,6 +52,7 @@ bool at_eof() ;
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 bool startswith(char *p, char *q);
 Token *tokenize();
+LVar *find_lvar(Token *tok);
 
 
 

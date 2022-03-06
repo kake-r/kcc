@@ -6,6 +6,9 @@ char *user_input;
 //現在注目しているトークン
 Token *token;
 
+//変数の連結リスト
+LVar *locals;
+
 //エラーを報告するための関数
 //printfと同じ引数をとる
 void error(char *fmt, ...) {
@@ -123,10 +126,16 @@ Token *tokenize() {
             continue;
         }
 
-        //とりあえず一文字
+        //一文字以上にも対応
         if ('a' <= *p && *p <= 'z') {
-            cur = new_token(TK_IDENT, cur, p++, 1);
-            cur->len = 1;
+            //直接pを動かすと多分まずい
+            char *c = p;
+            while('a' <= *c && *c <= 'z') {
+                c++;
+            }
+            int len = c - p;
+            cur = new_token(TK_IDENT, cur, p, 1);
+            p = c;
             continue;
         }
 
@@ -146,7 +155,13 @@ Token *tokenize() {
     return head.next;
 }
 
-
+//変数を名前で検索する。見つからなかった場合はNULLを返す。
+LVar *find_lvar(Token *tok) {
+  for (LVar *var = locals; var; var = var->next)
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+      return var;
+  return NULL;
+}
 
 
 
