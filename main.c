@@ -9,6 +9,10 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    //localが最初NULLじゃないから動いてなかった？
+    //初期化ってされないのか？
+    locals = NULL;
+
     //トークナイズする
     //結果はcodeに保存
     user_input = argv[1];

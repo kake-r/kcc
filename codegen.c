@@ -152,7 +152,29 @@ Node *primary() {
     if (tok) {
       Node *node = calloc(1, sizeof(Node));
       node->kind = ND_LVAR;
-      node->offset = (tok->str[0] - 'a' + 1) * 8;
+
+      LVar *lvar = find_lvar(tok);
+      //lvarが定義済みかで分岐
+      if (lvar) {
+        node->offset = lvar->offset;
+      }else {
+        //前に新しいやつを追加していく
+        //lvarを頭に持ってくるのはなんでだろう？
+        lvar = calloc(1, sizeof(LVar));
+        lvar->next = locals;
+        lvar->name = tok->str;
+        lvar->len = tok->len;
+        // lvar->offset = locals->offset + 8;
+        if (locals == NULL) {
+          //ないなら最初の8を確保
+          lvar->offset = 8;
+        }else {
+          //あるなら8ずらす
+          lvar->offset = locals->offset + 8;
+        }
+        node->offset = lvar->offset;
+        locals = lvar;
+      }
       return node;
     }
 
